@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan financiero básico</title>
+<style>
+:root{
+  --verde:#4f7a3a; --verde-osc:#3b5e2b; --verde-claro:#eef4ea; --borde:#cfdcc6;
+  --texto:#1f2a1b; --suave:#5b6656; --fondo:#f6f8f4; --blanco:#fff;
+  --ok:#2e7d32; --ok-bg:#e8f5e9; --mal:#c62828; --mal-bg:#fdecea; --aviso:#f6efd9;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.55;font-size:16px}
+header{background:var(--verde);color:#fff;text-align:center;padding:18px 16px 14px}
+header .inst{font-size:13px;letter-spacing:.06em;text-transform:uppercase;opacity:.9}
+header h1{margin:6px 0 2px;font-size:24px}
+header .sub{font-size:15px;opacity:.95}
+nav{position:sticky;top:0;z-index:5;background:var(--verde-osc);display:flex;overflow-x:auto;gap:2px;padding:6px 8px}
+nav a{color:#fff;text-decoration:none;font-size:14px;padding:6px 10px;border-radius:6px;white-space:nowrap}
+nav a:hover{background:rgba(255,255,255,.15)}
+main{max-width:860px;margin:0 auto;padding:16px}
+section{background:var(--blanco);border:1px solid var(--borde);border-radius:10px;padding:18px 18px 20px;margin:0 0 18px}
+h2{margin:0 0 4px;color:var(--verde-osc);font-size:21px}
+h3{margin:18px 0 6px;font-size:17px}
+.paso{display:inline-block;background:var(--verde);color:#fff;font-size:12px;padding:2px 8px;border-radius:20px;margin-bottom:6px}
+.intro{color:var(--suave);margin-top:0}
+.datos{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+label{font-weight:600;font-size:14px;display:block;margin-bottom:3px}
+input[type=text],input[type=date],textarea,select{width:100%;padding:8px 10px;border:1px solid #b9c7b0;border-radius:6px;font:inherit;background:#fff}
+textarea{min-height:110px;resize:vertical}
+.tarjetas{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tarjeta{border:1px solid var(--borde);border-left:5px solid var(--verde);border-radius:8px;padding:10px 12px;background:#fbfcfa}
+.tarjeta h4{margin:0 0 4px;font-size:16px}
+.tarjeta p{margin:4px 0}
+.formula{display:inline-block;background:var(--verde-claro);border:1px dashed var(--verde);border-radius:6px;padding:3px 8px;font-family:ui-monospace,Consolas,monospace;font-size:14px}
+.nota{background:var(--aviso);border-radius:8px;padding:10px 12px;margin:12px 0}
+table{border-collapse:collapse;width:100%;margin:8px 0;font-size:15px}
+th,td{border:1px solid var(--borde);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--verde-claro)}
+.sim{display:grid;grid-template-columns:1fr 1fr;gap:14px;background:var(--verde-claro);border-radius:8px;padding:14px}
+.sim input[type=range]{width:100%}
+.sim .val{font-weight:700}
+.res{background:#fff;border-radius:8px;padding:10px 12px;border:1px solid var(--borde)}
+.res div{display:flex;justify-content:space-between;border-bottom:1px dotted #d6dfd0;padding:3px 0}
+.res div:last-child{border-bottom:0}
+.pos{color:var(--ok);font-weight:700}.neg{color:var(--mal);font-weight:700}
+.ejercicio{border:1px solid var(--borde);border-radius:8px;padding:12px 14px;margin:14px 0}
+.fila{display:grid;grid-template-columns:1fr 210px;gap:10px;align-items:center;padding:5px 0;border-bottom:1px dotted #dfe6da}
+.fila:last-of-type{border-bottom:0}
+.fila input,.fila select{max-width:210px}
+.ok{border-color:var(--ok)!important;background:var(--ok-bg)!important}
+.bad{border-color:var(--mal)!important;background:var(--mal-bg)!important}
+button{font:inherit;cursor:pointer;border:0;border-radius:7px;padding:9px 16px;background:var(--verde);color:#fff;font-weight:600}
+button:hover{background:var(--verde-osc)}
+button.sec{background:#fff;color:var(--verde-osc);border:1px solid var(--verde)}
+.fb{margin-top:8px;font-size:15px}
+.pista{font-size:14px;color:var(--suave)}
+.pregunta{border:1px solid var(--borde);border-radius:8px;padding:12px 14px;margin:12px 0}
+.pregunta p{margin:0 0 8px;font-weight:600}
+.opc{display:block;padding:6px 8px;border-radius:6px;cursor:pointer;font-weight:400}
+.opc:hover{background:var(--verde-claro)}
+.opc input{margin-right:8px}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+.entregar{text-align:center}
+.entregar button{font-size:17px;padding:12px 22px}
+#estado{margin-top:12px}
+.contador{font-size:14px;color:var(--suave)}
+.docente-link{text-align:center;font-size:13px;margin:4px 0 30px}
+.docente-link a{color:var(--suave)}
+.pesos{display:flex;flex-wrap:wrap;gap:14px;align-items:end;margin:12px 0}
+.pesos input{width:80px;padding:6px;border:1px solid #b9c7b0;border-radius:6px;font:inherit}
+.tabla-wrap{overflow-x:auto}
+td.n{text-align:center;white-space:nowrap}
+td input{width:70px;padding:4px;border:1px solid #b9c7b0;border-radius:5px;font:inherit;text-align:center}
+.final{font-weight:700}
+details{border:1px solid var(--borde);border-radius:8px;margin:10px 0}
+summary{padding:10px 12px;cursor:pointer;font-weight:600}
+.det{padding:0 14px 14px}
+.r{white-space:pre-wrap;background:var(--fondo);border:1px solid var(--borde);border-radius:6px;padding:8px 10px;margin:3px 0 10px}
+.clave{columns:2;font-size:14px}
+@media (max-width:640px){
+  .datos,.tarjetas,.sim,.mini{grid-template-columns:1fr}
+  .clave{columns:1}
+  .fila{grid-template-columns:1fr}
+  header h1{font-size:21px}
+  section{padding:14px}
+}
+@media print{nav,button{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="inst">Institución Educativa John F. Kennedy · San Juanito, Meta</div>
+  <h1>Plan financiero básico</h1>
+  <div class="sub">Tecnología e Informática · Guía 3 · Emprendimiento</div>
+</header>
+<nav>
+  <a href="#s-datos">Mis datos</a>
+  <a href="#s-conceptos">1. Conceptos</a>
+  <a href="#s-ejercicios">2. Ejercicios</a>
+  <a href="#s-quiz">3. Quiz</a>
+  <a href="#s-abiertas">4. Preguntas abiertas</a>
+  <a href="#s-entrega">5. Entregar</a>
+</nav>
+
+<main>
+<section id="s-datos">
+  <h2>Mis datos</h2>
+  <p class="intro">Llena esto primero. Tu nombre aparece en el archivo que le vas a enviar al profesor.</p>
+  <div class="datos">
+    <div><label for="nombre">Nombre completo</label><input type="text" id="nombre" name="nombre" autocomplete="name"></div>
+    <div><label for="grado">Grado</label><input type="text" id="grado" name="grado" placeholder="Ej: 9°"></div>
+    <div><label for="fecha">Fecha</label><input type="date" id="fecha" name="fecha"></div>
+  </div>
+  <p class="pista">Lo que escribes se guarda solo en este navegador mientras trabajas. Igual, no cierres la página sin descargar tu entrega.</p>
+</section>
+
+<!-- ================= CONCEPTOS ================= -->
+<section id="s-conceptos">
+  <span class="paso">Parte 1</span>
+  <h2>¿Qué vamos a aprender?</h2>
+  <p>Cualquier negocio, por pequeño que sea, necesita responder tres preguntas: <b>¿cuánto me cuesta?</b>, <b>¿a cuánto lo vendo?</b> y <b>¿cuánto tengo que vender para no perder plata?</b> Hoy vamos a aprender a responderlas con números.</p>
+  <p>Piensa en un caso real: quieres estampar y vender camisetas en el colegio. Compras tela y tinta, pagas un espacio para trabajar y le pones un precio. Con ese ejemplo vamos a entender cada concepto.</p>
+
+  <h3>Conceptos financieros básicos</h3>
+  <div class="tarjetas">
+    <div class="tarjeta">
+      <h4>Costos fijos</h4>
+      <p>Son los gastos que pagas cada mes <b>vendas mucho, poco o nada</b>. No dependen de cuántas unidades produces.</p>
+      <p class="pista">Ejemplos: arriendo del local, sueldo fijo de un ayudante, plan de internet, cuota mensual de una máquina.</p>
+    </div>
+    <div class="tarjeta">
+      <h4>Costos variables</h4>
+      <p>Cambian según cuánto produces. Si haces 10 camisetas, compras tela para 10; si haces 50, para 50. Se calculan <b>por unidad</b>.</p>
+      <p class="pista">Ejemplos: tela, tinta, ingredientes, empaques, etiquetas.</p>
+    </div>
+    <div class="tarjeta">
+      <h4>Precio de venta</h4>
+      <p>Lo que le cobras al cliente. Tiene que cubrir lo que te cuesta producir y dejarte una ganancia.</p>
+      <p><span class="formula">Precio = Costo + Ganancia</span></p>
+      <p class="pista">También hay que mirar cuánto cobra la competencia y cuánto está dispuesta a pagar la gente.</p>
+    </div>
+    <div class="tarjeta">
+      <h4>Ingresos</h4>
+      <p>Toda la plata que entra por ventas. <b>Ojo:</b> ingreso no es lo mismo que ganancia, porque de ahí todavía hay que pagar los costos.</p>
+      <p><span class="formula">Ingresos = Precio × Unidades vendidas</span></p>
+    </div>
+    <div class="tarjeta">
+      <h4>Ganancia por unidad</h4>
+      <p>Lo que te queda de cada producto después de pagar su costo variable. Con esa plata vas pagando los costos fijos.</p>
+      <p><span class="formula">Ganancia por unidad = Precio − Costo variable</span></p>
+    </div>
+    <div class="tarjeta">
+      <h4>Costo total y utilidad</h4>
+      <p>El costo total suma los fijos y todos los variables. La utilidad es lo que de verdad ganas en el mes.</p>
+      <p><span class="formula">Costo total = Costos fijos + (Costo variable × Unidades)</span></p>
+      <p><span class="formula">Utilidad = Ingresos − Costo total</span></p>
+    </div>
+    <div class="tarjeta">
+      <h4>Margen de ganancia</h4>
+      <p>Qué porcentaje del precio es ganancia. Sirve para comparar productos aunque tengan precios distintos.</p>
+      <p><span class="formula">Margen = ((Precio − Costo) ÷ Precio) × 100</span></p>
+    </div>
+    <div class="tarjeta">
+      <h4>Punto de equilibrio</h4>
+      <p>Cuántas unidades tienes que vender para <b>no ganar ni perder</b>. Por debajo de ese número hay pérdida; por encima, ganancia.</p>
+      <p><span class="formula">PE = Costos fijos ÷ (Precio − Costo variable)</span></p>
+    </div>
+  </div>
+
+  <h3>Ejemplo resuelto: las camisetas</h3>
+  <p>Producto: camisetas estampadas. Costo variable por unidad: <b>$10.000</b>. Precio de venta: <b>$25.000</b>. Costos fijos al mes: <b>$500.000</b>.</p>
+  <table>
+    <tr><th>Paso</th><th>Cálculo</th><th>Resultado</th></tr>
+    <tr><td>Ganancia por unidad</td><td>25.000 − 10.000</td><td>$15.000</td></tr>
+    <tr><td>Margen</td><td>((25.000 − 10.000) ÷ 25.000) × 100</td><td>60%</td></tr>
+    <tr><td>Punto de equilibrio</td><td>500.000 ÷ 15.000</td><td>33,33 → <b>34 camisetas</b></td></tr>
+  </table>
+  <div class="nota"><b>¿Por qué 34 y no 33?</b> Porque no se puede vender un tercio de camiseta. El punto de equilibrio siempre se redondea <b>hacia arriba</b>. Míralo con números:
+    <br>• Vendiendo 33: ingresos $825.000 − costos ($500.000 + $330.000) = <span class="neg">pierdes $5.000</span>.
+    <br>• Vendiendo 34: ingresos $850.000 − costos ($500.000 + $340.000) = <span class="pos">ganas $10.000</span>.
+  </div>
+
+  <h3>Simulador: juega con los números</h3>
+  <p class="pista">Mueve las barras y mira qué pasa con el punto de equilibrio y la utilidad. Intenta subir el arriendo o bajar el precio.</p>
+  <div class="sim">
+    <div>
+      <label>Costo variable por unidad: <span class="val" id="v-cv"></span></label>
+      <input type="range" id="r-cv" min="1000" max="40000" step="500" value="10000">
+      <label>Precio de venta: <span class="val" id="v-p"></span></label>
+      <input type="range" id="r-p" min="2000" max="60000" step="500" value="25000">
+      <label>Costos fijos al mes: <span class="val" id="v-cf"></span></label>
+      <input type="range" id="r-cf" min="50000" max="2000000" step="10000" value="500000">
+      <label>Unidades vendidas en el mes: <span class="val" id="v-u"></span></label>
+      <input type="range" id="r-u" min="0" max="200" step="1" value="40">
+    </div>
+    <div class="res" id="sim-res"></div>
+  </div>
+</section>
+
+<!-- ================= EJERCICIOS ================= -->
+<section id="s-ejercicios">
+  <span class="paso">Parte 2</span>
+  <h2>Ejercicios de práctica</h2>
+  <p class="intro">Aquí sí puedes comprobar tus respuestas y corregir cuantas veces quieras. Escribe solo números (puedes usar puntos de miles, por ejemplo 1.200). Lo que tengas al final queda en tu entrega.</p>
+
+  <div class="ejercicio" id="e1">
+    <h3>Ejercicio 1. ¿Fijo o variable?</h3>
+    <p>Clasifica cada gasto de un pequeño negocio.</p>
+    <div class="fila"><span>Arriendo del local</span><select name="e1_1" data-ans="F"><option value="">Elige…</option><option value="F">Fijo</option><option value="V">Variable</option></select></div>
+    <div class="fila"><span>Harina para cada pan</span><select name="e1_2" data-ans="V"><option value="">Elige…</option><option value="F">Fijo</option><option value="V">Variable</option></select></div>
+    <div class="fila"><span>Sueldo mensual del ayudante</span><select name="e1_3" data-ans="F"><option value="">Elige…</option><option value="F">Fijo</option><option value="V">Variable</option></select></div>
+    <div class="fila"><span>Bolsas para empacar cada pedido</span><select name="e1_4" data-ans="V"><option value="">Elige…</option><option value="F">Fijo</option><option value="V">Variable</option></select></div>
+    <div class="fila"><span>Plan de internet del negocio</span><select name="e1_5" data-ans="F"><option value="">Elige…</option><option value="F">Fijo</option><option value="V">Variable</option></select></div>
+    <div class="fila"><span>Tela para cada camiseta</span><select name="e1_6" data-ans="V"><option value="">Elige…</option><option value="F">Fijo</option><option value="V">Variable</option></select></div>
+    <div class="fila"><span>Cuota mensual de la máquina de coser</span><select name="e1_7" data-ans="F"><option value="">Elige…</option><option value="F">Fijo</option><option value="V">Variable</option></select></div>
+    <div class="fila"><span>Etiqueta que se pega a cada producto</span><select name="e1_8" data-ans="V"><option value="">Elige…</option><option value="F">Fijo</option><option value="V">Variable</option></select></div>
+    <button type="button" data-check="e1">Comprobar</button><div class="fb" id="fb-e1"></div>
+  </div>
+
+  <div class="ejercicio" id="e2">
+    <h3>Ejercicio 2. Las empanadas de Sofía</h3>
+    <p>Sofía vende empanadas a la salida del colegio. Cada empanada le cuesta <b>$800</b> en ingredientes y la vende a <b>$2.000</b>. Al mes paga <b>$360.000</b> de costos fijos (gas y el permiso del puesto).</p>
+    <div class="fila"><span>a) Ganancia por cada empanada ($)</span><input type="text" inputmode="decimal" name="e2_1" data-ans="1200"></div>
+    <div class="fila"><span>b) Margen de ganancia (%)</span><input type="text" inputmode="decimal" name="e2_2" data-ans="60" data-tol="0.5"></div>
+    <div class="fila"><span>c) Punto de equilibrio (empanadas al mes)</span><input type="text" inputmode="decimal" name="e2_3" data-ans="300"></div>
+    <div class="fila"><span>d) Si vende 400 empanadas, ¿cuántos son sus ingresos? ($)</span><input type="text" inputmode="decimal" name="e2_4" data-ans="800000"></div>
+    <div class="fila"><span>e) Con esas 400 empanadas, ¿cuál es su utilidad? ($)</span><input type="text" inputmode="decimal" name="e2_5" data-ans="120000"></div>
+    <p class="pista">Pista para la e): primero calcula el costo total = fijos + (costo variable × 400).</p>
+    <button type="button" data-check="e2">Comprobar</button><div class="fb" id="fb-e2"></div>
+  </div>
+
+  <div class="ejercicio" id="e3">
+    <h3>Ejercicio 3. Jugos naturales</h3>
+    <p>Un emprendimiento de jugos tiene un costo variable de <b>$1.500</b> por vaso, lo vende a <b>$4.000</b> y paga <b>$250.000</b> al mes de costos fijos.</p>
+    <div class="fila"><span>a) Ganancia por vaso ($)</span><input type="text" inputmode="decimal" name="e3_1" data-ans="2500"></div>
+    <div class="fila"><span>b) Margen de ganancia (%)</span><input type="text" inputmode="decimal" name="e3_2" data-ans="62.5" data-tol="0.5"></div>
+    <div class="fila"><span>c) Punto de equilibrio (vasos al mes)</span><input type="text" inputmode="decimal" name="e3_3" data-ans="100"></div>
+    <button type="button" data-check="e3">Comprobar</button><div class="fb" id="fb-e3"></div>
+  </div>
+
+  <div class="ejercicio" id="e4">
+    <h3>Ejercicio 4. Ponerle precio a un producto</h3>
+    <p>Si ya sabes cuánto te cuesta un producto y qué margen quieres, puedes despejar el precio:</p>
+    <p><span class="formula">Precio = Costo ÷ (1 − Margen/100)</span></p>
+    <p>Una manilla tejida cuesta <b>$4.000</b> en materiales.</p>
+    <div class="fila"><span>a) Precio para tener un margen del 50% ($)</span><input type="text" inputmode="decimal" name="e4_1" data-ans="8000"></div>
+    <div class="fila"><span>b) Precio para tener un margen del 20% ($)</span><input type="text" inputmode="decimal" name="e4_2" data-ans="5000"></div>
+    <p class="pista">Comprueba: con el precio que encontraste, calcula el margen con la fórmula normal y te debe dar el mismo porcentaje.</p>
+    <button type="button" data-check="e4">Comprobar</button><div class="fb" id="fb-e4"></div>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section id="s-quiz">
+  <span class="paso">Parte 3</span>
+  <h2>Quiz</h2>
+  <p class="intro">Este quiz no muestra si acertaste. Lo califica el profesor con el archivo que envíes. Responde solo, con calma, y usa tu cuaderno para los cálculos.</p>
+  <div id="quiz"></div>
+  <p class="contador" id="quiz-cont"></p>
+</section>
+
+<!-- ================= ABIERTAS ================= -->
+<section id="s-abiertas">
+  <span class="paso">Parte 4</span>
+  <h2>Preguntas abiertas</h2>
+  <p class="intro">Responde con tus propias palabras. No hay una sola respuesta correcta, pero sí se nota cuando alguien entendió.</p>
+
+  <div class="pregunta">
+    <p>1. ¿Por qué alguien que va a empezar un negocio debería calcular su punto de equilibrio antes de arrancar?</p>
+    <textarea name="a1"></textarea>
+  </div>
+  <div class="pregunta">
+    <p>2. Explica la diferencia entre un costo fijo y un costo variable usando el ejemplo de un negocio real de San Juanito o de tu vereda.</p>
+    <textarea name="a2"></textarea>
+  </div>
+  <div class="pregunta">
+    <p>3. Mi mini plan financiero. Inventa un emprendimiento que podrías montar aquí, estima los números y haz los cálculos.</p>
+    <div class="mini">
+      <div><label>Producto o servicio</label><input type="text" name="a3_producto"></div>
+      <div><label>Costo variable por unidad ($)</label><input type="text" inputmode="decimal" name="a3_cv"></div>
+      <div><label>Precio de venta ($)</label><input type="text" inputmode="decimal" name="a3_precio"></div>
+      <div><label>Costos fijos al mes ($)</label><input type="text" inputmode="decimal" name="a3_cf"></div>
+      <div><label>Margen de ganancia (%)</label><input type="text" inputmode="decimal" name="a3_margen"></div>
+      <div><label>Punto de equilibrio (unidades)</label><input type="text" inputmode="decimal" name="a3_pe"></div>
+    </div>
+    <label>Explica de dónde sacaste los costos, muestra los cálculos y di si te parece un negocio viable.</label>
+    <textarea name="a3_explicacion"></textarea>
+  </div>
+  <div class="pregunta">
+    <p>4. Calculaste que tu punto de equilibrio es de 500 unidades al mes, pero crees que solo puedes vender unas 200. ¿Qué harías? Propón por lo menos dos estrategias y explica cómo cambiaría cada una el punto de equilibrio.</p>
+    <textarea name="a4"></textarea>
+  </div>
+  <div class="pregunta">
+    <p>5. ¿Qué aprendiste hoy que le podría servir a tu familia o a ti en la vida diaria?</p>
+    <textarea name="a5"></textarea>
+  </div>
+</section>
+
+<!-- ================= ENTREGA ================= -->
+<section id="s-entrega" class="entregar">
+  <span class="paso">Parte 5</span>
+  <h2>Entregar</h2>
+  <p>Cuando termines, descarga tu archivo de respuestas y envíaselo al profesor por el medio que él indique. No le cambies el nombre ni lo abras para editarlo.</p>
+  <button type="button" id="btn-descargar">Descargar mis respuestas</button>
+  <div id="estado"></div>
+</section>
+
+<!-- ================= ZONA DOCENTE ================= -->
+<section id="s-docente" style="display:none">
+  <span class="paso">Solo docente</span>
+  <h2>Calificar entregas</h2>
+  <p class="intro">Selecciona los archivos que te enviaron los estudiantes. Puedes cargar varios a la vez y seguir agregando más.</p>
+  <input type="file" id="d-archivos" accept=".html,.htm" multiple>
+  <p class="pista" id="d-msg"></p>
+  <div class="pesos">
+    <div><label>Ejercicios %</label><input type="number" id="w-ej" value="20" min="0" max="100"></div>
+    <div><label>Quiz %</label><input type="number" id="w-qz" value="50" min="0" max="100"></div>
+    <div><label>Abiertas %</label><input type="number" id="w-ab" value="30" min="0" max="100"></div>
+    <div><label>Nota mínima</label><input type="number" id="nmin" value="1.0" step="0.1" min="0" max="5"></div>
+    <button type="button" class="sec" id="btn-csv">Exportar planilla (CSV)</button>
+  </div>
+  <p class="pista">Ejercicios y quiz se califican solos: nota = 5,0 × (aciertos ÷ total), sin bajar de la nota mínima. La nota de las preguntas abiertas la pones tú después de leerlas. Lo que escribas se guarda en este navegador.</p>
+  <div class="tabla-wrap"><table id="d-tabla"><thead><tr><th>Estudiante</th><th>Grado</th><th>Ejerc.</th><th>Quiz</th><th>Nota ejerc.</th><th>Nota quiz</th><th>Nota abiertas</th><th>Nota final</th></tr></thead><tbody></tbody></table></div>
+  <div id="d-detalles"></div>
+  <h3>Clave del quiz</h3>
+  <div id="d-clave" class="clave"></div>
+  <h3>Orientación para las preguntas abiertas</h3>
+  <ul class="pista">
+    <li><b>1.</b> Que el punto de equilibrio dice cuántas unidades hay que vender para cubrir los costos, y que sirve para saber si el negocio es realista antes de invertir.</li>
+    <li><b>2.</b> Diferencia clara (el fijo no depende de la producción, el variable sí) con ejemplos locales bien clasificados.</li>
+    <li><b>3.</b> Números coherentes, precio mayor que el costo variable, margen y punto de equilibrio bien calculados con sus datos, y una conclusión sobre si es viable.</li>
+    <li><b>4.</b> Subir el precio, bajar el costo variable, reducir costos fijos, buscar más clientes. Lo ideal es que explique que las tres primeras bajan el punto de equilibrio.</li>
+    <li><b>5.</b> Reflexión personal; vale el esfuerzo y la conexión con su realidad.</li>
+  </ul>
+  <button type="button" class="sec" id="btn-salir">Cerrar zona docente</button>
+</section>
+<p class="docente-link"><a href="#" id="link-docente">Zona docente</a></p>
+</main>
+
+<script>
+(function(){
+'use strict';
+var ACTIVIDAD = 'tec-guia3-plan-financiero-v1';
+var STORE = 'act_' + ACTIVIDAD;
+var ENC = 'cdc42859zaz1doB9RqizPqUSk/oQs+fTsgnkf85KnYu7LREvlFeHY0td6p4cs+678hSoFFOaXOUL8nwTgA5O+j2pP9DGJu+ZJGSxLhMYLKErlAgpoynsqhxSRWFLR1eRfjcIxhOcJXXOcXGc8xdAOVvXRTk9J6++dR4ktKpZPSaSp9OCdSyCzgCkGiVOB1wocloTiPDPLAo5X4LoPzN8KU/UUmJWrOlceIFPIjrJERdi7AF9tVLxXyjQhQ/9IF5fcQDFR+m0sF2iXluan49kLljAiqtQmr4UPmK6jzqoWjyMGJ/oVIaVzAYaq4HXf0CtdZ6mz4dv47Wdqw41DEk295z+7h3AN+JVQjj8YcsZcRd/6QpShfpi4LPpLCSM3ZibmxrMKH9wygqaw5B7AqWXZjoMh9pBebWAGJ7PWqhSDTcUYNAgpBc2g4fnR/kHni9BeBrtp5ICr0dgD6GGN2mq1knNdw3S+ZjxAJh/yibB4QmC0ZZ6MyyuYKyzIuQoPf0lD+2/7A9Rmkr3YFBbNCccP14JffxaoE1VYg==';
+
+/* ---------- Quiz (la clave va cifrada; solo se abre con el código del docente) ---------- */
+var QUIZ = [
+ {id:'q1', t:'¿Cuál de estos es un costo fijo?', o:{a:'La tela de cada camiseta',b:'El arriendo del local',c:'La tinta para estampar',d:'Las bolsas de empaque'}},
+ {id:'q2', t:'Si un negocio produce el doble de unidades, ¿qué pasa con sus costos variables?', o:{a:'Se quedan iguales',b:'Bajan a la mitad',c:'Aumentan, más o menos al doble',d:'Desaparecen'}},
+ {id:'q3', t:'Producir un producto cuesta $6.000 y se vende a $10.000. ¿Cuál es el margen de ganancia?', o:{a:'40%',b:'60%',c:'66,7%',d:'4.000%'}},
+ {id:'q4', t:'Costos fijos: $400.000. Precio: $9.000. Costo variable: $5.000. ¿Cuál es el punto de equilibrio?', o:{a:'44 unidades',b:'80 unidades',c:'4.000 unidades',d:'100 unidades'}},
+ {id:'q5', t:'¿Qué significa estar en el punto de equilibrio?', o:{a:'Que vendiste lo máximo posible',b:'Que los ingresos son iguales a los costos totales: no ganas ni pierdes',c:'Que ganas la mitad de lo que vendes',d:'Que ya no tienes que pagar costos fijos'}},
+ {id:'q6', t:'Vendes 50 manillas a $3.000 cada una. ¿Cuánto son tus ingresos?', o:{a:'$53.000',b:'$15.000',c:'$150.000',d:'$1.500.000'}},
+ {id:'q7', t:'Si sube el arriendo y todo lo demás sigue igual, el punto de equilibrio…', o:{a:'Aumenta',b:'Disminuye',c:'Queda igual',d:'Se vuelve cero'}},
+ {id:'q8', t:'Una arepa se vende a $2.500 y su costo variable es $1.000. ¿Cuál es la ganancia por unidad?', o:{a:'$3.500',b:'$1.500',c:'$2.500',d:'$1.000'}},
+ {id:'q9', t:'Un producto cuesta $8.000 y quieres un margen del 50% sobre el precio. ¿A cuánto lo debes vender?', o:{a:'$12.000',b:'$4.000',c:'$16.000',d:'$10.000'}},
+ {id:'q10', t:'Si vendes menos unidades que tu punto de equilibrio, entonces…', o:{a:'Tienes ganancia',b:'No ganas ni pierdes',c:'Tus costos fijos bajan',d:'Tienes pérdida'}},
+ {id:'q11', t:'Costos fijos: $600.000. Precio: $20.000. Costo variable: $8.000. Escribe el punto de equilibrio en unidades.', num:true},
+ {id:'q12', t:'Un producto cuesta $3.000 y se vende a $5.000. Escribe el margen de ganancia en porcentaje (solo el número).', num:true}
+];
+var ABIERTAS = [
+ '¿Por qué calcular el punto de equilibrio antes de arrancar un negocio?',
+ 'Diferencia entre costo fijo y variable con un ejemplo local',
+ 'Mini plan financiero',
+ 'Punto de equilibrio de 500 y ventas de 200: estrategias',
+ '¿Qué aprendiste hoy que sirva a tu familia o a ti?'
+];
+
+/* ---------- Motor de calificación (se copia también dentro de cada entrega) ---------- */
+function motorDocente(){
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function parseNum(s){
+    if(s==null) return NaN;
+    s=String(s).replace(/[$\s%]/g,'');
+    if(!s) return NaN;
+    if(/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s=s.replace(/\./g,'').replace(',','.');
+    else s=s.replace(',','.');
+    return Number(s);
+  }
+  function dec(pin,b64){
+    var s='jfk-guia3|'+String(pin||'').trim().toUpperCase(), h=2166136261, i, bin, out='';
+    for(i=0;i<s.length;i++){ h=Math.imul(h^s.charCodeAt(i),16777619)>>>0; }
+    try{ bin=atob(b64); }catch(e){ return null; }
+    for(i=0;i<bin.length;i++){ h^=h<<13; h>>>=0; h^=h>>>17; h^=h<<5; h>>>=0; out+=String.fromCharCode(bin.charCodeAt(i)^(h&255)); }
+    try{ var o=JSON.parse(decodeURIComponent(escape(out))); return o&&o.m==='ok'?o:null; }catch(e){ return null; }
+  }
+  function nota(ac,tot,min){ return tot? Math.max(min,5*ac/tot) : min; }
+  function fmt(n){ return (Math.round(n*10)/10).toFixed(1).replace('.',','); }
+  function calificar(d,K){
+    var ejAc=0, res={}, qAc=0;
+    (d.ejercicios||[]).forEach(function(e){ if(e.correcto) ejAc++; });
+    Object.keys(K.q).forEach(function(k){
+      var v=(d.quiz||{})[k]||'', ok;
+      if(typeof K.q[k]==='number'){ var n=parseNum(v); ok=!isNaN(n)&&Math.abs(n-K.q[k])<0.5; }
+      else ok=(v===K.q[k]);
+      res[k]=ok; if(ok) qAc++;
+    });
+    return {ejAc:ejAc, ejTot:(d.ejercicios||[]).length, qAc:qAc, qTot:Object.keys(K.q).length, res:res};
+  }
+  return {esc:esc, parseNum:parseNum, dec:dec, nota:nota, fmt:fmt, calificar:calificar};
+}
+
+/* ---------- Panel que aparece dentro de cada archivo de entrega ---------- */
+function panelEntrega(M, ENC){
+  var d=JSON.parse(document.getElementById('datos-entrega').textContent);
+  var btn=document.getElementById('btn-calificar');
+  if(!btn) return;
+  btn.addEventListener('click', function(){
+    var pin=prompt('Código del docente:');
+    if(pin===null) return;
+    var K=M.dec(pin,ENC);
+    if(!K){ alert('Código incorrecto.'); return; }
+    var c=M.calificar(d,K);
+    Object.keys(K.q).forEach(function(k){
+      var cell=document.getElementById('rev-'+k);
+      if(cell) cell.innerHTML = c.res[k] ? '<b style="color:#2e7d32">✓</b>' : '<b style="color:#c62828">✗</b> Clave: '+M.esc(K.t[k]);
+    });
+    document.querySelectorAll('.col-rev').forEach(function(x){ x.style.display=''; });
+    var nE=M.nota(c.ejAc,c.ejTot,1), nQ=M.nota(c.qAc,c.qTot,1);
+    document.getElementById('pd-ej').textContent=c.ejAc+' de '+c.ejTot+' → '+M.fmt(nE);
+    document.getElementById('pd-qz').textContent=c.qAc+' de '+c.qTot+' → '+M.fmt(nQ);
+    var inp=document.getElementById('pd-ab');
+    function final(){
+      var nA=parseFloat(String(inp.value).replace(',','.'));
+      document.getElementById('pd-fin').textContent = isNaN(nA) ? 'Escribe la nota de las abiertas' : M.fmt(nE*0.2+nQ*0.5+nA*0.3);
+    }
+    inp.oninput=final; final();
+    document.getElementById('panel-docente').style.display='block';
+    btn.style.display='none';
+  });
+}
+
+var M = motorDocente(), esc = M.esc, parseNum = M.parseNum;
+
+/* ---------- Construir quiz ---------- */
+var qz = document.getElementById('quiz');
+QUIZ.forEach(function(q,i){
+  var h = '<div class="pregunta"><p>'+(i+1)+'. '+esc(q.t)+'</p>';
+  if(q.num){
+    h += '<input type="text" inputmode="decimal" name="'+q.id+'" placeholder="Tu respuesta" style="max-width:220px">';
+  } else {
+    Object.keys(q.o).forEach(function(k){
+      h += '<label class="opc"><input type="radio" name="'+q.id+'" value="'+k+'">'+k+') '+esc(q.o[k])+'</label>';
+    });
+  }
+  qz.insertAdjacentHTML('beforeend', h+'</div>');
+});
+
+/* ---------- Utilidades ---------- */
+function pesos(n){return '$' + Math.round(n).toLocaleString('es-CO');}
+function campos(){return document.querySelectorAll('main > section:not(#s-docente) input[name], main > section:not(#s-docente) select[name], main > section:not(#s-docente) textarea[name]');}
+function valorDe(name){
+  var els = document.getElementsByName(name);
+  if(!els.length) return '';
+  if(els[0].type==='radio'){ for(var i=0;i<els.length;i++){ if(els[i].checked) return els[i].value; } return ''; }
+  return els[0].value;
+}
+
+/* ---------- Guardado local del estudiante ---------- */
+function guardar(){
+  var d={};
+  campos().forEach(function(el){
+    if(el.type==='radio'){ if(el.checked) d[el.name]=el.value; }
+    else d[el.name]=el.value;
+  });
+  try{ localStorage.setItem(STORE, JSON.stringify(d)); }catch(e){}
+}
+function restaurar(){
+  var d=null;
+  try{ d=JSON.parse(localStorage.getItem(STORE)||'null'); }catch(e){}
+  if(!d) return;
+  campos().forEach(function(el){
+    if(!(el.name in d)) return;
+    if(el.type==='radio') el.checked = (el.value===d[el.name]);
+    else el.value = d[el.name];
+  });
+}
+restaurar();
+var f = document.getElementById('fecha');
+if(!f.value){ var hoy=new Date(); f.value = hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0')+'-'+String(hoy.getDate()).padStart(2,'0'); }
+function alEscribir(e){ if(e.target.closest && e.target.closest('#s-docente')) return; guardar(); contarQuiz(); }
+document.addEventListener('input', alEscribir);
+document.addEventListener('change', alEscribir);
+
+/* ---------- Ejercicios ---------- */
+function evaluar(el){
+  var ans = el.getAttribute('data-ans');
+  if(el.tagName==='SELECT') return el.value===ans;
+  var v = parseNum(el.value), a = Number(ans), tol = Number(el.getAttribute('data-tol')||0);
+  return !isNaN(v) && Math.abs(v-a) <= tol + 1e-9;
+}
+document.querySelectorAll('[data-check]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var id=b.getAttribute('data-check'), box=document.getElementById(id);
+    var els=box.querySelectorAll('[data-ans]'), bien=0, vacios=0;
+    els.forEach(function(el){
+      el.classList.remove('ok','bad');
+      if(!el.value){ vacios++; return; }
+      if(evaluar(el)){ el.classList.add('ok'); bien++; } else el.classList.add('bad');
+    });
+    var fb=document.getElementById('fb-'+id);
+    if(bien===els.length) fb.innerHTML='<span class="pos">¡Todo correcto! '+bien+' de '+els.length+'.</span>';
+    else fb.innerHTML='Llevas <b>'+bien+' de '+els.length+'</b> correctas'+(vacios?' ('+vacios+' sin responder)':'')+'. Revisa las que quedaron en rojo y vuelve a intentar.';
+  });
+});
+
+/* ---------- Simulador ---------- */
+function sim(){
+  var cv=+document.getElementById('r-cv').value, p=+document.getElementById('r-p').value,
+      cf=+document.getElementById('r-cf').value, u=+document.getElementById('r-u').value;
+  document.getElementById('v-cv').textContent=pesos(cv);
+  document.getElementById('v-p').textContent=pesos(p);
+  document.getElementById('v-cf').textContent=pesos(cf);
+  document.getElementById('v-u').textContent=u;
+  var gu=p-cv, margen=p>0?(gu/p*100):0, ing=p*u, ct=cf+cv*u, ut=ing-ct;
+  var pe = gu>0 ? Math.ceil(cf/gu) : null;
+  var h='';
+  h+='<div><span>Ganancia por unidad</span><b class="'+(gu>0?'pos':'neg')+'">'+pesos(gu)+'</b></div>';
+  h+='<div><span>Margen</span><b>'+margen.toFixed(1).replace('.',',')+'%</b></div>';
+  h+='<div><span>Punto de equilibrio</span><b>'+(pe===null?'No existe: el precio no cubre el costo':pe+' unidades')+'</b></div>';
+  h+='<div><span>Ingresos</span><span>'+pesos(ing)+'</span></div>';
+  h+='<div><span>Costo total</span><span>'+pesos(ct)+'</span></div>';
+  h+='<div><span>Utilidad del mes</span><b class="'+(ut>=0?'pos':'neg')+'">'+pesos(ut)+'</b></div>';
+  if(pe!==null) h+='<p class="pista" style="margin:8px 0 0">'+(u>=pe?'Estás por encima del punto de equilibrio: hay ganancia.':'Te faltan '+(pe-u)+' unidades para llegar al punto de equilibrio.')+'</p>';
+  document.getElementById('sim-res').innerHTML=h;
+}
+['r-cv','r-p','r-cf','r-u'].forEach(function(id){ document.getElementById(id).addEventListener('input', sim); });
+sim();
+
+/* ---------- Contador quiz ---------- */
+function contarQuiz(){
+  var n=0; QUIZ.forEach(function(q){ if(String(valorDe(q.id)).trim()) n++; });
+  document.getElementById('quiz-cont').textContent='Has respondido '+n+' de '+QUIZ.length+' preguntas.';
+  return n;
+}
+contarQuiz();
+
+/* ---------- Descargar entrega ---------- */
+document.getElementById('btn-descargar').addEventListener('click', function(){
+  var est=document.getElementById('estado');
+  var nombre=document.getElementById('nombre').value.trim();
+  if(!nombre){ est.innerHTML='<span class="neg">Escribe tu nombre completo arriba, en "Mis datos", antes de descargar.</span>'; document.getElementById('nombre').focus(); return; }
+  var resp=contarQuiz();
+  if(resp<QUIZ.length && !confirm('Te faltan '+(QUIZ.length-resp)+' preguntas del quiz. ¿Quieres descargar de todas formas?')) return;
+
+  var ejercicios=[];
+  document.querySelectorAll('#s-ejercicios [data-ans]').forEach(function(el){
+    var etiqueta = el.closest('.fila').querySelector('span').textContent;
+    var bloque = el.closest('.ejercicio').querySelector('h3').textContent;
+    var valor = el.tagName==='SELECT' ? (el.value==='F'?'Fijo':el.value==='V'?'Variable':'') : el.value;
+    ejercicios.push({id:el.name, ejercicio:bloque, item:etiqueta, respuesta:valor, correcto: el.value? evaluar(el):false});
+  });
+  var quiz={}; QUIZ.forEach(function(q){ quiz[q.id]=String(valorDe(q.id)).trim(); });
+  var abiertas={}; ['a1','a2','a4','a5','a3_producto','a3_cv','a3_precio','a3_cf','a3_margen','a3_pe','a3_explicacion'].forEach(function(k){ abiertas[k]=valorDe(k); });
+
+  var datos={actividad:ACTIVIDAD, nombre:nombre, grado:document.getElementById('grado').value.trim(),
+    fecha:document.getElementById('fecha').value, generado:new Date().toISOString(),
+    ejercicios:ejercicios, quiz:quiz, abiertas:abiertas};
+
+  var okEj = ejercicios.filter(function(e){return e.correcto;}).length;
+  var r='<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+  r+='<title>Entrega - '+esc(nombre)+'</title><style>body{font-family:system-ui,Arial,sans-serif;max-width:820px;margin:0 auto;padding:16px;color:#1f2a1b;line-height:1.5}h1{color:#3b5e2b;font-size:22px;margin-bottom:4px}h2{color:#3b5e2b;font-size:18px;border-bottom:2px solid #cfdcc6;padding-bottom:3px;margin-top:24px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border:1px solid #cfdcc6;padding:6px 8px;text-align:left;vertical-align:top}th{background:#eef4ea}.r{white-space:pre-wrap;background:#f6f8f4;border:1px solid #cfdcc6;border-radius:6px;padding:8px 10px;margin:4px 0 12px}.p{font-weight:600;margin-bottom:2px}button{font:inherit;cursor:pointer;border:1px solid #4f7a3a;background:#fff;color:#3b5e2b;border-radius:7px;padding:7px 14px;font-weight:600}input{font:inherit;padding:5px 8px;width:90px;border:1px solid #b9c7b0;border-radius:6px}@media print{button{display:none}}</style></head><body>';
+  r+='<h1>Plan financiero básico · Entrega</h1><p>I.E. John F. Kennedy · Tecnología e Informática · Guía 3</p>';
+  r+='<table><tr><th>Estudiante</th><td>'+esc(nombre)+'</td></tr><tr><th>Grado</th><td>'+esc(datos.grado)+'</td></tr><tr><th>Fecha</th><td>'+esc(datos.fecha)+'</td></tr></table>';
+  r+='<div id="panel-docente" style="display:none;border:2px solid #4f7a3a;border-radius:8px;padding:12px;margin:14px 0;background:#eef4ea"><b>Calificación del docente</b><table style="margin-top:6px">';
+  r+='<tr><th>Ejercicios (20%)</th><td id="pd-ej"></td></tr><tr><th>Quiz (50%)</th><td id="pd-qz"></td></tr>';
+  r+='<tr><th>Preguntas abiertas (30%)</th><td><input id="pd-ab" placeholder="1,0–5,0" inputmode="decimal"></td></tr>';
+  r+='<tr><th>Nota final</th><td id="pd-fin" style="font-weight:700;font-size:17px"></td></tr></table></div>';
+  r+='<p style="text-align:right"><button id="btn-calificar">Calificar (solo docente)</button></p>';
+  r+='<h2>Ejercicios de práctica ('+okEj+' de '+ejercicios.length+' correctos)</h2><table><tr><th>Ejercicio</th><th>Ítem</th><th>Respuesta</th><th>Estado</th></tr>';
+  ejercicios.forEach(function(e){ r+='<tr><td>'+esc(e.ejercicio)+'</td><td>'+esc(e.item)+'</td><td>'+esc(e.respuesta||'—')+'</td><td>'+(e.correcto?'Correcto':'Incorrecto / vacío')+'</td></tr>'; });
+  r+='</table><h2>Quiz</h2><table><tr><th>#</th><th>Pregunta</th><th>Respuesta del estudiante</th><th class="col-rev" style="display:none">Revisión</th></tr>';
+  QUIZ.forEach(function(q,i){ var v=quiz[q.id]; var txt = q.num ? v : (v? v+') '+q.o[v] : ''); r+='<tr><td>'+(i+1)+'</td><td>'+esc(q.t)+'</td><td>'+esc(txt||'Sin responder')+'</td><td class="col-rev" id="rev-'+q.id+'" style="display:none"></td></tr>'; });
+  r+='</table><h2>Preguntas abiertas</h2>';
+  r+='<div class="p">1. '+esc(ABIERTAS[0])+'</div><div class="r">'+esc(abiertas.a1||'Sin responder')+'</div>';
+  r+='<div class="p">2. '+esc(ABIERTAS[1])+'</div><div class="r">'+esc(abiertas.a2||'Sin responder')+'</div>';
+  r+='<div class="p">3. Mini plan financiero</div><table><tr><th>Producto</th><td>'+esc(abiertas.a3_producto)+'</td></tr><tr><th>Costo variable</th><td>'+esc(abiertas.a3_cv)+'</td></tr><tr><th>Precio</th><td>'+esc(abiertas.a3_precio)+'</td></tr><tr><th>Costos fijos</th><td>'+esc(abiertas.a3_cf)+'</td></tr><tr><th>Margen</th><td>'+esc(abiertas.a3_margen)+'</td></tr><tr><th>Punto de equilibrio</th><td>'+esc(abiertas.a3_pe)+'</td></tr></table><div class="r">'+esc(abiertas.a3_explicacion||'Sin explicación')+'</div>';
+  r+='<div class="p">4. '+esc(ABIERTAS[3])+'</div><div class="r">'+esc(abiertas.a4||'Sin responder')+'</div>';
+  r+='<div class="p">5. '+esc(ABIERTAS[4])+'</div><div class="r">'+esc(abiertas.a5||'Sin responder')+'</div>';
+  r+='<script type="application/json" id="datos-entrega">'+JSON.stringify(datos).replace(/</g,'\\u003c')+'<\/script>';
+  r+='<script>('+panelEntrega.toString()+')(('+motorDocente.toString()+')(),'+JSON.stringify(ENC)+');<\/script></body></html>';
+
+  var archivo = 'Guia3_PlanFinanciero_'+nombre.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'')+'.html';
+  var blob=new Blob([r],{type:'text/html;charset=utf-8'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=archivo;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  est.innerHTML='<span class="pos">Listo. Se descargó <b>'+esc(archivo)+'</b>.</span><br>Búscalo en tu carpeta de Descargas y envíaselo al profesor.';
+});
+
+/* ---------- Zona docente ---------- */
+var K=null, entregas={}, manual={}, DSTORE='calif_'+ACTIVIDAD;
+try{ manual=JSON.parse(localStorage.getItem(DSTORE)||'{}')||{}; }catch(e){ manual={}; }
+function llave(n){return String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();}
+function nmin(){var v=parseFloat(document.getElementById('nmin').value);return isNaN(v)?1:v;}
+
+document.getElementById('link-docente').addEventListener('click', function(e){
+  e.preventDefault();
+  if(!K){
+    var pin=prompt('Código del docente:');
+    if(pin===null) return;
+    K=M.dec(pin,ENC);
+    if(!K){ alert('Código incorrecto.'); return; }
+    document.getElementById('d-clave').innerHTML=QUIZ.map(function(q,i){return '<div>'+(i+1)+'. '+esc(K.t[q.id])+'</div>';}).join('');
+  }
+  var s=document.getElementById('s-docente'); s.style.display='block'; s.scrollIntoView({behavior:'smooth'});
+  pintar();
+});
+document.getElementById('btn-salir').addEventListener('click', function(){
+  K=null; document.getElementById('s-docente').style.display='none';
+  document.getElementById('d-clave').innerHTML=''; window.scrollTo(0,0);
+});
+
+document.getElementById('d-archivos').addEventListener('change', function(e){
+  var files=e.target.files; if(!files.length) return;
+  var pend=files.length, nuevos=0, err=[];
+  Array.prototype.forEach.call(files,function(fl){
+    var fr=new FileReader();
+    fr.onload=function(){
+      try{
+        var doc=new DOMParser().parseFromString(fr.result,'text/html');
+        var s=doc.getElementById('datos-entrega');
+        var d=JSON.parse(s.textContent);
+        if(d.actividad!==ACTIVIDAD) throw 0;
+        entregas[llave(d.nombre)]=d; nuevos++;
+      }catch(x){ err.push(fl.name); }
+      if(--pend===0){
+        var m='Cargadas en esta tanda: '+nuevos+'. Total: '+Object.keys(entregas).length+'.';
+        if(err.length) m+=' No reconocidos: '+err.join(', ');
+        document.getElementById('d-msg').textContent=m;
+        e.target.value='';
+        pintar();
+      }
+    };
+    fr.readAsText(fl);
+  });
+});
+
+function filas(){
+  var we=+document.getElementById('w-ej').value||0, wq=+document.getElementById('w-qz').value||0, wa=+document.getElementById('w-ab').value||0;
+  var suma=we+wq+wa||1;
+  return Object.keys(entregas).sort().map(function(k){
+    var d=entregas[k], c=M.calificar(d,K);
+    var nE=M.nota(c.ejAc,c.ejTot,nmin()), nQ=M.nota(c.qAc,c.qTot,nmin());
+    var nA=parseFloat(String(manual[k]||'').replace(',','.'));
+    var fin=isNaN(nA)?null:(nE*we+nQ*wq+nA*wa)/suma;
+    return {k:k,d:d,c:c,nE:nE,nQ:nQ,nA:nA,fin:fin};
+  });
+}
+
+function pintar(){
+  if(!K) return;
+  var fs=filas(), tb=document.querySelector('#d-tabla tbody');
+  tb.innerHTML = fs.length ? fs.map(function(x){
+    return '<tr><td>'+esc(x.d.nombre)+'</td><td class="n">'+esc(x.d.grado)+'</td><td class="n">'+x.c.ejAc+'/'+x.c.ejTot+'</td><td class="n">'+x.c.qAc+'/'+x.c.qTot+'</td>'+
+      '<td class="n">'+M.fmt(x.nE)+'</td><td class="n">'+M.fmt(x.nQ)+'</td>'+
+      '<td class="n"><input data-k="'+esc(x.k)+'" value="'+esc(manual[x.k]||'')+'" placeholder="1,0–5,0" inputmode="decimal"></td>'+
+      '<td class="n final'+(x.fin!==null&&x.fin<3?' neg':'')+'">'+(x.fin===null?'Falta abiertas':M.fmt(x.fin))+'</td></tr>';
+  }).join('') : '<tr><td colspan="8" class="pista">Aún no has cargado entregas.</td></tr>';
+  tb.querySelectorAll('input[data-k]').forEach(function(inp){
+    inp.addEventListener('change',function(){ manual[inp.getAttribute('data-k')]=inp.value; try{localStorage.setItem(DSTORE,JSON.stringify(manual));}catch(e){} pintar(); });
+  });
+  var abiertos={}; document.querySelectorAll('#d-detalles details[open]').forEach(function(x){abiertos[x.getAttribute('data-k')]=1;});
+  document.getElementById('d-detalles').innerHTML=fs.map(function(x){
+    var a=x.d.abiertas||{}, q='';
+    QUIZ.forEach(function(p,i){ q+='<tr><td>'+(i+1)+'</td><td>'+esc(x.d.quiz[p.id]||'—')+'</td><td>'+(x.c.res[p.id]?'<span class="pos">✓</span>':'<span class="neg">✗</span>')+'</td></tr>'; });
+    var malEj=(x.d.ejercicios||[]).filter(function(e){return !e.correcto;}).map(function(e){return esc(e.ejercicio.replace(/^Ejercicio /,'E')+' · '+e.item+': '+(e.respuesta||'vacío'));}).join('<br>');
+    return '<details data-k="'+esc(x.k)+'"'+(abiertos[x.k]?' open':'')+'><summary>'+esc(x.d.nombre)+' · '+esc(x.d.grado)+' · Quiz '+x.c.qAc+'/'+x.c.qTot+'</summary><div class="det">'+
+      '<div><b>1.</b> '+esc(ABIERTAS[0])+'</div><div class="r">'+esc(a.a1||'Sin responder')+'</div>'+
+      '<div><b>2.</b> '+esc(ABIERTAS[1])+'</div><div class="r">'+esc(a.a2||'Sin responder')+'</div>'+
+      '<div><b>3.</b> Mini plan: '+esc(a.a3_producto||'—')+'</div><div class="r">Costo var.: '+esc(a.a3_cv)+' · Precio: '+esc(a.a3_precio)+' · Fijos: '+esc(a.a3_cf)+' · Margen: '+esc(a.a3_margen)+' · PE: '+esc(a.a3_pe)+'\n\n'+esc(a.a3_explicacion||'Sin explicación')+'</div>'+
+      '<div><b>4.</b> '+esc(ABIERTAS[3])+'</div><div class="r">'+esc(a.a4||'Sin responder')+'</div>'+
+      '<div><b>5.</b> '+esc(ABIERTAS[4])+'</div><div class="r">'+esc(a.a5||'Sin responder')+'</div>'+
+      '<p><b>Quiz</b></p><table><tr><th>#</th><th>Respondió</th><th></th></tr>'+q+'</table>'+
+      (malEj?'<p><b>Ejercicios con error o vacíos</b><br><span class="pista">'+malEj+'</span></p>':'<p class="pos">Ejercicios: todos correctos.</p>')+
+      '</div></details>';
+  }).join('');
+}
+['w-ej','w-qz','w-ab','nmin'].forEach(function(id){ document.getElementById(id).addEventListener('input', pintar); });
+
+document.getElementById('btn-csv').addEventListener('click', function(){
+  var fs=filas(); if(!fs.length){ alert('Primero carga las entregas.'); return; }
+  var c=[['Estudiante','Grado','Ejercicios','Quiz','Nota ejercicios','Nota quiz','Nota abiertas','Nota final']];
+  fs.forEach(function(x){ c.push([x.d.nombre,x.d.grado,x.c.ejAc+'/'+x.c.ejTot,x.c.qAc+'/'+x.c.qTot,M.fmt(x.nE),M.fmt(x.nQ),isNaN(x.nA)?'':M.fmt(x.nA),x.fin===null?'':M.fmt(x.fin)]); });
+  var txt='\ufeff'+c.map(function(r){return r.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(';');}).join('\r\n');
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv;charset=utf-8'})); a.download='Notas_Guia3_PlanFinanciero.csv';
+  document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },1500);
+});
+})();
+</script>
+</body>
+</html>
